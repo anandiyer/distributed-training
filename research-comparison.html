@@ -1,0 +1,229 @@
+<table>
+  <thead>
+    <tr>
+      <th>Training Mechanism</th>
+      <th>Category</th>
+      <th>Description</th>
+      <th>Communication Efficiency</th>
+      <th>Fault Tolerance</th>
+      <th>Scalability</th>
+      <th>Preliminary Results</th>
+      <th>Notable Models</th>
+      <th>Training Time</th>
+      <th>Model Size</th>
+      <th>Devices Used</th>
+      <th>Date Created</th>
+      <th>Original Source</th>
+      <th>Authors</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DDP (Distributed Data Parallel)</td>
+      <td>Core Techniques</td>
+      <td>Full model replica on each GPU, syncing gradients.</td>
+      <td>Moderate overhead due to gradient synchronization.</td>
+      <td>Limited; failure in one process can halt training unless handled.</td>
+      <td>Expands smoothly with added GPUs.</td>
+      <td>Widely used; achieves significant speedups; scales to thousands of GPUs.</td>
+      <td>ResNet-50</td>
+      <td>29 hours</td>
+      <td>100M params</td>
+      <td>256 GPUs</td>
+      <td>Latest PyTorch version</td>
+      <td><a href="https://pytorch.org/tutorials/beginner/ddp_series_intro.html">https://pytorch.org/tutorials/beginner/ddp_series_intro.html</a></td>
+      <td>PyTorch Team</td>
+    </tr>
+    <tr>
+      <td>Pipeline Parallelism</td>
+      <td>Core Techniques</td>
+      <td>Divides model into stages across GPUs; uses micro-batches to keep GPUs utilized.</td>
+      <td>Communication of activations and gradients between stages; can overlap with computation.</td>
+      <td>Limited; failure in any stage halts the pipeline.</td>
+      <td>Expands smoothly with added GPUs; works well with deep, staged models.</td>
+      <td>Trained large models like GPT and BERT; improved utilization.</td>
+      <td>BERT</td>
+      <td>4 days</td>
+      <td>340M params</td>
+      <td>64 GPUs</td>
+      <td>PyTorch 2.4 Documentation</td>
+      <td><a href="https://pytorch.org/docs/stable/distributed_pipelining.html">https://pytorch.org/docs/stable/distributed_pipelining.html</a></td>
+      <td>PyTorch Team</td>
+    </tr>
+    <tr>
+      <td>Tensor Parallelism</td>
+      <td>Core Techniques</td>
+      <td>Splits layers across GPUs.</td>
+      <td>High communication overhead can be high due to synchronization needs.</td>
+      <td>Limited; GPU failure can affect entire process.</td>
+      <td>Works well with deep, staged models.</td>
+      <td>Used in training models like GPT-3 (175B parameters).</td>
+      <td>GPT-2</td>
+      <td>14 days</td>
+      <td>1.5B params</td>
+      <td>128 GPUs</td>
+      <td>Latest documentation</td>
+      <td><a href="https://huggingface.co/docs/transformers/parallelism">https://huggingface.co/docs/transformers/parallelism</a></td>
+      <td>Hugging Face Team</td>
+    </tr>
+    <tr>
+      <td>DeepSpeed</td>
+      <td>DDP, Pipeline, Tensor</td>
+      <td>Optimization library for distributed training/inference.</td>
+      <td>Efficient for large models. High efficiency; reduces communication volume; overlaps computation.</td>
+      <td>High resilience with ZeRO and other techniques.</td>
+      <td>Ideal for very large models. Scales to thousands of GPUs.</td>
+      <td>Powers models like MT-530B, BLOOM.</td>
+      <td>MT-530B, BLOOM</td>
+      <td>Variable</td>
+      <td>Up to trillions of params</td>
+      <td>Thousands of GPUs</td>
+      <td>February, 2020</td>
+      <td><a href="https://github.com/microsoft/DeepSpeed">https://github.com/microsoft/DeepSpeed</a></td>
+      <td>Microsoft</td>
+    </tr>
+    <tr>
+      <td>ZeRO (Zero Redundancy Optimizer)</td>
+      <td>DDP*</td>
+      <td>Partitions states and parameters.</td>
+      <td>High efficiency; reduces communication and computation; overlaps computation.</td>
+      <td>Standard; uses checkpointing and recovery mechanisms.</td>
+      <td>Scales to trillions of parameters.</td>
+      <td>Trained over 100B parameters with super-linear speedup on 400 GPUs.</td>
+      <td>Turing-NLG</td>
+      <td>9 days</td>
+      <td>17B params</td>
+      <td>400 GPUs</td>
+      <td>Oct 4, 2019; revised May 13, 2020</td>
+      <td><a href="https://arxiv.org/abs/1910.02054">https://arxiv.org/abs/1910.02054</a></td>
+      <td>Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, Yuxiong He</td>
+    </tr>
+    <tr>
+      <td>Fully Sharded Data Parallel (FSDP)</td>
+      <td>DDP</td>
+      <td>Shards model parameters to save memory.</td>
+      <td>High efficiency; reduces memory redundancy; overlaps computation.</td>
+      <td>Standard; fault tolerance; not specifically enhanced.</td>
+      <td>Supports extremely large models.</td>
+      <td>Trained models up to trillions of parameters efficiently on fewer GPUs.</td>
+      <td>GPT-3</td>
+      <td>34 days</td>
+      <td>175B params</td>
+      <td>1024 GPUs</td>
+      <td>July 15, 2021</td>
+      <td><a href="https://engineering.fb.com/2021/07/15/open-source/fsdp/">https://engineering.fb.com/2021/07/15/open-source/fsdp/</a></td>
+      <td>Myle Ott, Sam Shleifer, Min Xu, Priya Goyal, et al.</td>
+    </tr>
+    <tr>
+      <td>lo-fi (Local Fine-Tuning)</td>
+      <td>DDP</td>
+      <td>Nodes fine-tune independently; weights are averaged at the end. Uses fault-tolerant pipelines; dynamically rebalances nodes; for unreliable devices.</td>
+      <td>Extremely high; only communicates once at the end.</td>
+      <td>High; nodes operate independently; failure doesn't affect others.</td>
+      <td>Eases large model fine-tuning.</td>
+      <td>Matched baseline accuracy on ImageNet (85.96%); improved under shifts.</td>
+      <td>Vision Transformer</td>
+      <td>2 days</td>
+      <td>85M params</td>
+      <td>16 GPUs</td>
+      <td>Nov 12, 2022</td>
+      <td><a href="https://arxiv.org/abs/2210.11948">https://arxiv.org/abs/2210.11948</a></td>
+      <td>Mitchell Wortsman*, Suchin Gururangan*, et al.</td>
+    </tr>
+    <tr>
+      <td>SWARM Parallelism</td>
+      <td>Pipeline</td>
+      <td>Prioritizes stable peers; efficient with slow interconnects.</td>
+      <td>High; recovers from failures; adjusts to resource changes.</td>
+      <td>Adapts to unreliable resources.</td>
+      <td>Trained 1B-scale Transformer LM on T4 GPUs with &lt;200 Mb/s bandwidth.</td>
+      <td>Custom LM</td>
+      <td>6 days</td>
+      <td>1B params</td>
+      <td>100 GPUs</td>
+      <td>Jun 29, 2023</td>
+      <td><a href="https://arxiv.org/abs/2301.11913">https://arxiv.org/abs/2301.11913</a></td>
+      <td>Max Ryabinin*, Tim Dettmers*, et al.</td>
+    </tr>
+    <tr>
+      <td>DiPaCo (Distributed Path Composition)</td>
+      <td>Pipeline</td>
+      <td>Modular architecture; distributes computation via paths through shared modules.</td>
+      <td>Reduces communication by infrequent synchronization.</td>
+      <td>High; robust to worker failures; handles heterogeneous devices.</td>
+      <td>Scales with modular expansions.</td>
+      <td>On C4, exceeded 1B dense transformer performance using 256 paths.</td>
+      <td>Custom Transformer</td>
+      <td>5 days</td>
+      <td>1B params</td>
+      <td>256 GPUs</td>
+      <td>March 2024</td>
+      <td><a href="https://arxiv.org/abs/2403.10616">https://arxiv.org/abs/2403.10616</a></td>
+      <td>Arthur Douillard*, Qixuan Feng*, et al.</td>
+    </tr>
+    <tr>
+      <td>DisTrO (Distributed Training Optimization)</td>
+      <td>Tensor</td>
+      <td>Trains across unreliable devices; uses fault-tolerant pipelines; nodes can join or leave.</td>
+      <td>Low overhead; tolerates slow and unreliable connections.</td>
+      <td>High; devices can join or leave without disruption.</td>
+      <td>Adapts to diverse environments.</td>
+      <td>Trained 1B-scale Transformer LM on preemptible servers with high throughput.</td>
+      <td>Custom LM</td>
+      <td>7 days</td>
+      <td>1B params</td>
+      <td>50 CPUs</td>
+      <td>August 26, 2024</td>
+      <td><a href="https://github.com/NousResearch/DisTrO/blob/main/DisTrO_Preliminary_Report.pdf">https://github.com/NousResearch/DisTrO/blob/main/DisTrO_Preliminary_Report.pdf</a></td>
+      <td>Nous Research Team</td>
+    </tr>
+    <tr>
+      <td>DiLoCo (Distributed Low-Communication)</td>
+      <td>DDP</td>
+      <td>Workers perform many local updates before synchronizing; uses AdamW and Nesterov momentum.</td>
+      <td>Very high efficiency; communicates 500x less than synchronous methods.</td>
+      <td>High; robust to fluctuating resources; handles unstable connections.</td>
+      <td>Suitable for poor connectivity.</td>
+      <td>On C4, matched synchronous optimization while communicating 500x less.</td>
+      <td>Custom Model on C4</td>
+      <td>3 days</td>
+      <td>1B params</td>
+      <td>32 GPUs</td>
+      <td>Nov 14, 2023; revised Sep 23, 2024</td>
+      <td><a href="https://arxiv.org/abs/2311.08105">https://arxiv.org/abs/2311.08105</a></td>
+      <td>Arthur Douillard et al.</td>
+    </tr>
+    <tr>
+      <td>AQ-SGD</td>
+      <td>Pipeline</td>
+      <td>Compresses changes in activations for decentralized training.</td>
+      <td>Achieves 4.3 - 4.9x speedup with compression.</td>
+      <td>Not specified</td>
+      <td>Suitable for large foundation models.</td>
+      <td>Fine-tuned large models DeBERTA, GPT-2</td>
+      <td>DeBERTA, GPT-2</td>
+      <td>Variable</td>
+      <td>Up to 1.5B params</td>
+      <td>Not specified</td>
+      <td>December 5, 2022</td>
+      <td><a href="https://www.together.ai/blog/neurips-2022-overcoming-communication-bottlenecks-for-decentralized-training-2">https://www.together.ai/blog/neurips-2022-overcoming-communication-bottlenecks-for-decentralized-training-2</a></td>
+      <td>Together AI Team</td>
+    </tr>
+    <tr>
+      <td>Petals</td>
+      <td>Pipeline</td>
+      <td>Decentralized system for fine-tuning LLMs using volunteer GPUs.</td>
+      <td>Decentralized system for fine-tuning LLMs using volunteer GPUs.</td>
+      <td>High; reroutes tasks if nodes disconnect.</td>
+      <td>Scales with volunteer contributions.</td>
+      <td>3–25x faster latency in BLOOM, OPT, LLaMA</td>
+      <td>BLOOM, OPT, LLaMA</td>
+      <td>Variable</td>
+      <td>Up to 175B params</td>
+      <td>Volunteer GPUs</td>
+      <td>July 11, 2023</td>
+      <td><a href="https://research.yandex.com/blog/petals-decentralized-inference-and-finetuning-of-large-language-models">https://research.yandex.com/blog/petals-decentralized-inference-and-finetuning-of-large-language-models</a></td>
+      <td>Max Ryabinin, Alexander Borzunov</td>
+    </tr>
+  </tbody>
+</table>
